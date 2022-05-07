@@ -1,22 +1,21 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "langsplit",
   "version": "${version}",
-  "name": "Example Mod",
-  "description": "This is an example description! Tell everyone what your mod is about!",
+  "name": "Language Splitter",
+  "description": "To put this simply, I made this mod for my siblings to be able to learn English while playing Minecraft. It makes it possible to display 2 languages at the same time in the game.",
   "authors": [
-    "Me!"
+    "fabbe50"
   ],
   "contact": {
-    "homepage": "https://fabricmc.net/",
-    "sources": "https://github.com/FabricMC/fabric-example-mod"
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/langsplit",
+    "sources": "https://github.com/fabbe50/languagesplitter"
   },
-  "license": "Insert License Here",
-  "icon": "assets/examplemod/icon.png",
+  "license": "GNU GPLv3",
   "environment": "*",
   "entrypoints": {
     "main": [
-      "net.examplemod.fabric.ExampleModFabric"
+      "com.fabbe50.fabric.LangSplitFabric"
     ]
   },
   "depends": {

@@ -1,11 +1,11 @@
-package net.examplemod;
+package com.fabbe50;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 
 import java.nio.file.Path;
 
-public class ExampleExpectPlatform {
+public class LangSplitExpectPlatform {
     /**
      * We can use {@link Platform#getConfigFolder()} but this is just an example of {@link ExpectPlatform}.
      * <p>
@@ -20,6 +20,21 @@ public class ExampleExpectPlatform {
     @ExpectPlatform
     public static Path getConfigDirectory() {
         // Just throw an error, the content should get replaced at runtime.
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static String getLanguage() {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean getInLine() {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean getDebugger() {
         throw new AssertionError();
     }
 }
