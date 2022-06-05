@@ -14,7 +14,7 @@
   "license": "GNU GPLv3",
   "environment": "*",
   "entrypoints": {
-    "main": [
+    "client": [
       "com.fabbe50.fabric.LangSplitFabric"
     ]
   },

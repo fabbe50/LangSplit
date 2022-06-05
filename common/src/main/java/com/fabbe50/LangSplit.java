@@ -106,8 +106,8 @@ public class LangSplit {
                 }
             }
         });
-        ClientGuiEvent.RENDER_HUD.register((matrices, tickDelta) -> {
+        /*ClientGuiEvent.RENDER_HUD.register((matrices, tickDelta) -> {
 
-        });
+        });*/
     }
 }

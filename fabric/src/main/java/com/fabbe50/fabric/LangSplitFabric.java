@@ -1,15 +1,11 @@
 package com.fabbe50.fabric;
 
 import com.fabbe50.LangSplit;
-import com.fabbe50.LangSplitExpectPlatform;
-import me.shedaniel.autoconfig.ConfigData;
-import me.shedaniel.autoconfig.annotation.Config;
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import net.fabricmc.api.ModInitializer;
+import net.fabricmc.api.ClientModInitializer;
 
-public class LangSplitFabric implements ModInitializer {
+public class LangSplitFabric implements ClientModInitializer {
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
         LangSplitExpectPlatformImpl.registerConfig();
         LangSplit.init();
     }
