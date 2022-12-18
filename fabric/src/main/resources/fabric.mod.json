@@ -15,7 +15,7 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.fabbe50.langsplit.fabric.LangSplitFabric"
+      "com.fabbe50.langsplit.fabric.LangsplitFabric"
     ],
     "modmenu": [
       "com.fabbe50.langsplit.fabric.ModMenuIntegration"
