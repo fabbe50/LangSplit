@@ -1,11 +1,11 @@
-package com.fabbe50;
+package com.fabbe50.langsplit;
 
 import dev.architectury.injectables.annotations.ExpectPlatform;
 import dev.architectury.platform.Platform;
 
 import java.nio.file.Path;
 
-public class LangSplitExpectPlatform {
+public class LangsplitExpectPlatform {
     /**
      * We can use {@link Platform#getConfigFolder()} but this is just an example of {@link ExpectPlatform}.
      * <p>
@@ -13,9 +13,9 @@ public class LangSplitExpectPlatform {
      * platform sub-package, with its class suffixed with {@code Impl}.
      * <p>
      * Example:
-     * Expect: net.examplemod.ExampleExpectPlatform#getConfigDirectory()
-     * Actual Fabric: net.examplemod.fabric.ExampleExpectPlatformImpl#getConfigDirectory()
-     * Actual Forge: net.examplemod.forge.ExampleExpectPlatformImpl#getConfigDirectory()
+     * Expect: com.fabbe50.langsplit.ExampleExpectPlatform#getConfigDirectory()
+     * Actual Fabric: com.fabbe50.langsplit.fabric.ExpectPlatformImpl#getConfigDirectory()
+     * Actual Forge: com.fabbe50.langsplit.forge.ExpectPlatformImpl#getConfigDirectory()
      */
     @ExpectPlatform
     public static Path getConfigDirectory() {
@@ -35,6 +35,11 @@ public class LangSplitExpectPlatform {
 
     @ExpectPlatform
     public static boolean getDebugger() {
+        throw new AssertionError();
+    }
+
+    @ExpectPlatform
+    public static boolean getTranslationBrackets() {
         throw new AssertionError();
     }
 }

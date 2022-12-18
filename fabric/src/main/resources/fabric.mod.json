@@ -15,16 +15,19 @@
   "environment": "*",
   "entrypoints": {
     "client": [
-      "com.fabbe50.fabric.LangSplitFabric"
+      "com.fabbe50.langsplit.fabric.LangSplitFabric"
+    ],
+    "modmenu": [
+      "com.fabbe50.langsplit.fabric.ModMenuIntegration"
     ]
   },
+  "mixins": [
+    "langsplit.mixins.json",
+    "langsplit-common.mixins.json"
+  ],
   "depends": {
-    "fabricloader": ">=0.7.4",
     "fabric": "*",
-    "minecraft": ">=1.16.4",
-    "architectury": ">=1.1.55"
-  },
-  "suggests": {
-    "flamingo": "*"
+    "minecraft": ">=1.18.2",
+    "architectury": ">=4.5.76"
   }
 }

@@ -1,6 +1,6 @@
-package com.fabbe50.fabric;
+package com.fabbe50.langsplit.fabric;
 
-import com.fabbe50.LangSplitExpectPlatform;
+import com.fabbe50.langsplit.LangsplitExpectPlatform;
 import me.shedaniel.autoconfig.AutoConfig;
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
@@ -9,9 +9,9 @@ import net.fabricmc.loader.api.FabricLoader;
 
 import java.nio.file.Path;
 
-public class LangSplitExpectPlatformImpl {
+public class LangsplitExpectPlatformImpl {
     /**
-     * This is our actual method to {@link LangSplitExpectPlatform#getConfigDirectory()}.
+     * This is our actual method to {@link LangsplitExpectPlatform#getConfigDirectory()}.
      */
     public static Path getConfigDirectory() {
         return FabricLoader.getInstance().getConfigDir();
@@ -26,30 +26,38 @@ public class LangSplitExpectPlatformImpl {
     }
 
     /**
-     * {@link LangSplitExpectPlatform#getLanguage()}
+     * {@link LangsplitExpectPlatform#getLanguage()}
      */
     public static String getLanguage() {
         return getConfig().language;
     }
 
     /**
-     * {@link LangSplitExpectPlatform#getInLine()}
+     * {@link LangsplitExpectPlatform#getInLine()}
      */
     public static boolean getInLine() {
-        return getConfig().inline;
+        return false;
     }
 
     /**
-     * {@link LangSplitExpectPlatform#getDebugger()}
+     * {@link LangsplitExpectPlatform#getDebugger()}
      */
     public static boolean getDebugger() {
         return getConfig().debugger;
     }
 
+    /**
+     * {@link LangsplitExpectPlatform#getTranslationBrackets()}
+     */
+    public static boolean getTranslationBrackets() {
+        return getConfig().translationBrackets;
+    }
+
     @Config(name = "langsplit")
-    static class ModConfig implements ConfigData {
+    public static class ModConfig implements ConfigData {
         String language = "en_us";
         boolean inline = false;
         boolean debugger = false;
+        boolean translationBrackets = true;
     }
 }

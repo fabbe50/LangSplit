@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[37,)"
+loaderVersion = "[40,)"
 #issueTrackerURL = ""
 license = "GNU GPLv3"
 
@@ -17,20 +17,20 @@ It makes it possible to display 2 languages at the same time in the game.
 [[dependencies.langsplit]]
 modId = "forge"
 mandatory = true
-versionRange = "[37,)"
+versionRange = "[40,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.langsplit]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.17.1,)"
+versionRange = "[1.18.2,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.langsplit]]
 modId = "architectury"
 mandatory = true
-versionRange = "[2.3.23,)"
+versionRange = "[4.5.76,)"
 ordering = "AFTER"
 side = "BOTH"
