@@ -1,3 +1,7 @@
 {
-
+    "text.langsplit.title": "LangSplit Options",
+    "text.langsplit.option.language": "Language",
+    "text.langsplit.option.inline": "Inline Translation",
+    "text.langsplit.option.debugger": "Debugging Tools",
+    "text.langsplit.option.translationBrackets": "Encase in Brackets"
 }

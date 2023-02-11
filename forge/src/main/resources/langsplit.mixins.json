@@ -3,6 +3,13 @@
   "package": "com.fabbe50.langsplit.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "MixinAbstractButton",
+    "MixinAbstractSliderButton",
+    "MixinAbstractWidget",
+    "MixinAbstractWidgetGetMessage",
+    "MixinScreen",
+    "MixinTranslatableComponent",
+    "MixinTranslatableComponentAccessor"
   ],
   "mixins": [
   ],

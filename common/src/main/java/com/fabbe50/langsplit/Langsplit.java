@@ -22,24 +22,38 @@ public class Langsplit {
         handleTooltipEvent();
     }
 
-    public static void setupLanguage() {
-        LanguageInfo primary = Minecraft.getInstance().getLanguageManager().getSelected();
-        LanguageInfo secondary = Minecraft.getInstance().getLanguageManager().getLanguage(LangsplitExpectPlatform.getLanguage());
+    public static void setupLanguage(LanguageInfo secondary) {
+        System.out.println("Setting up secondary language.");
+        List<LanguageInfo> list = Lists.newArrayList(secondary);
+        clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list);
+        loadedLanguage = LangsplitExpectPlatform.getLanguage();
+        System.out.println("Secondary language initialized. Loaded " + loadedLanguage);
+    }
 
-        if (secondary != null) {
-            if (primary != secondary) {
-                List<LanguageInfo> list = Lists.newArrayList(secondary);
-                clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list);
-                loadedLanguage = LangsplitExpectPlatform.getLanguage();
+    private static LanguageInfo secondary = null;
+    private static LanguageInfo oldSecondary = null;
+    public static boolean isLanguageLoaded() {
+        LanguageInfo primary = Minecraft.getInstance().getLanguageManager().getSelected();
+        if (!getLoadedLanguage().equals(LangsplitExpectPlatform.getLanguage())) {
+            secondary = Minecraft.getInstance().getLanguageManager().getLanguage(LangsplitExpectPlatform.getLanguage());
+            if (secondary != null || secondary != oldSecondary) {
+                oldSecondary = secondary;
             }
         }
+
+        if (secondary != null) {
+            if (primary != secondary && getLoadedLanguage() != null && !getLoadedLanguage().equals(secondary.getCode())) {
+                setupLanguage(secondary);
+                return true;
+            } else return primary != secondary && getLoadedLanguage() != null && getLoadedLanguage().equals(secondary.getCode());
+        }
+        return false;
     }
 
     public static void handleTooltipEvent() {
         ClientTooltipEvent.ITEM.register((stack, lines, flag) -> {
-            if (!loadedLanguage.equals(LangsplitExpectPlatform.getLanguage())) {
-                setupLanguage();
-            }
+            if (!isLanguageLoaded())
+                return;
 
             List<Component> newTooltip = new ArrayList<>();
             for (Component component : lines) {
@@ -49,7 +63,10 @@ public class Langsplit {
                     if (translatableContents.getArgs().length != 0) {
                         String newText = getClientLanguage().getOrDefault(translatableContents.getKey());
                         Object[] newArgs = LangUtils.fixArguments(translatableContents.getArgs());
-                        StringBuilder original = new StringBuilder(component.getString().substring(0, component.getString().indexOf(Langsplit.divider)));
+                        int endIndex = component.getString().indexOf(Langsplit.divider);
+                        if (endIndex < 1 || endIndex > component.getString().length())
+                            return;
+                        StringBuilder original = new StringBuilder(component.getString().substring(0, endIndex));
                         boolean argumentFlag = false;
                         for (Object o : newArgs) {
                             if (original.toString().startsWith("+" + o.toString())) {
@@ -90,8 +107,7 @@ public class Langsplit {
                         hasContent = true;
                     } else {
                         //Target "item.modifiers.mainhand" as this has no arguments.
-                        String newText = getClientLanguage().getOrDefault(translatableContents.getKey());
-                        System.out.println(translatableContents);
+                        //String newText = getClientLanguage().getOrDefault(translatableContents.getKey());
                     }
                 }
                 if (!hasContent) {

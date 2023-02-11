@@ -34,11 +34,6 @@ public class LangsplitExpectPlatform {
     }
 
     @ExpectPlatform
-    public static boolean getDebugger() {
-        throw new AssertionError();
-    }
-
-    @ExpectPlatform
     public static boolean getTranslationBrackets() {
         throw new AssertionError();
     }

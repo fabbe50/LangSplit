@@ -50,50 +50,48 @@ public abstract class MixinTranslatableComponent {
 
     @Inject(at = @At("HEAD"), method = "decompose()V", cancellable = true)
     private void decompose(CallbackInfo ci) {
-        if (!Langsplit.getLoadedLanguage().equals(LangsplitExpectPlatform.getLanguage())) {
-            Langsplit.setupLanguage();
-        }
+        if (Langsplit.isLanguageLoaded()) {
+            boolean fromTooltip = false;
+            if (this.key.startsWith("TOOLTIP")) {
+                fromTooltip = true;
+                this.key = this.key.replace("TOOLTIP", "");
+            }
+            boolean fromWidget = false;
+            if (this.key.startsWith("WIDGET")) {
+                fromWidget = true;
+                this.key = this.key.replace("WIDGET", "");
+            }
 
-        boolean fromTooltip = false;
-        if (this.key.startsWith("TOOLTIP")) {
-            fromTooltip = true;
-            this.key = this.key.replace("TOOLTIP", "");
-        }
-        boolean fromWidget = false;
-        if (this.key.startsWith("WIDGET")) {
-            fromWidget = true;
-            this.key = this.key.replace("WIDGET", "");
-        }
+            Language language = Language.getInstance();
 
-        Language language = Language.getInstance();
+            this.decomposedWith = language;
+            String s = language.getOrDefault(this.key);
 
-        this.decomposedWith = language;
-        String s = language.getOrDefault(this.key);
-
-        try {
-            ImmutableList.Builder<FormattedText> builder = ImmutableList.builder();
-            Objects.requireNonNull(builder);
-            this.decomposeTemplate(s, builder::add);
-            if (Langsplit.getClientLanguage() != null && !fromTooltip && !fromWidget) {
-                String alt = language.getOrDefault(Langsplit.getClientLanguage().getOrDefault(this.key));
-                if (!alt.equals(s) && !shouldIgnore(key)) {
-                    if (LangsplitExpectPlatform.getInLine()) {
-                        builder.add(FormattedText.of(" "));
-                    } else {
-                        builder.add(FormattedText.of(Langsplit.divider));
-                    }
-                    if (LangsplitExpectPlatform.getTranslationBrackets()) {
-                        this.decomposeTemplate("[" + alt + "]", builder::add);
-                    } else {
-                        this.decomposeTemplate(alt, builder::add);
+            try {
+                ImmutableList.Builder<FormattedText> builder = ImmutableList.builder();
+                Objects.requireNonNull(builder);
+                this.decomposeTemplate(s, builder::add);
+                if (Langsplit.getClientLanguage() != null && !fromTooltip && !fromWidget) {
+                    String alt = language.getOrDefault(Langsplit.getClientLanguage().getOrDefault(this.key));
+                    if (!alt.equals(s) && !shouldIgnore(key)) {
+                        if (LangsplitExpectPlatform.getInLine()) {
+                            builder.add(FormattedText.of(" "));
+                        } else {
+                            builder.add(FormattedText.of(Langsplit.divider));
+                        }
+                        if (LangsplitExpectPlatform.getTranslationBrackets()) {
+                            this.decomposeTemplate("[" + alt + "]", builder::add);
+                        } else {
+                            this.decomposeTemplate(alt, builder::add);
+                        }
                     }
                 }
+                this.decomposedParts = builder.build();
+            } catch (TranslatableFormatException e) {
+                this.decomposedParts.add(FormattedText.of(s));
             }
-            this.decomposedParts = builder.build();
-        } catch (TranslatableFormatException e) {
-            this.decomposedParts.add(FormattedText.of(s));
+            ci.cancel();
         }
-        ci.cancel();
     }
 
     private boolean shouldIgnore(String key) {

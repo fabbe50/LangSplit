@@ -2,13 +2,11 @@ package com.fabbe50.langsplit.mixin;
 
 import com.fabbe50.langsplit.LangUtils;
 import com.fabbe50.langsplit.Langsplit;
-import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
-import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.components.events.GuiEventListener;
@@ -46,7 +44,7 @@ public abstract class MixinAbstractWidget extends GuiComponent implements Widget
 
         Component buttonText = getMessage();
 
-        if (buttonText != null && Langsplit.getClientLanguage() != null) {
+        if (buttonText != null && Langsplit.isLanguageLoaded()) {
             List<Component> lines = LangUtils.splitLines(buttonText);
 
             int offset = font.lineHeight;

@@ -40,13 +40,6 @@ public class LangsplitExpectPlatformImpl {
     }
 
     /**
-     * {@link LangsplitExpectPlatform#getDebugger()}
-     */
-    public static boolean getDebugger() {
-        return getConfig().debugger;
-    }
-
-    /**
      * {@link LangsplitExpectPlatform#getTranslationBrackets()}
      */
     public static boolean getTranslationBrackets() {
