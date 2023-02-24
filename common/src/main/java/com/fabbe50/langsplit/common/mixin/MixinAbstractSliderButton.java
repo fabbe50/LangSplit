@@ -1,10 +1,11 @@
-package com.fabbe50.langsplit.mixin;
+package com.fabbe50.langsplit.common.mixin;
 
-import com.fabbe50.langsplit.LangUtils;
-import com.fabbe50.langsplit.Langsplit;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
+import com.fabbe50.langsplit.common.LangUtils;
+import com.fabbe50.langsplit.common.Langsplit;
+import com.fabbe50.langsplit.common.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(AbstractSliderButton.class)
