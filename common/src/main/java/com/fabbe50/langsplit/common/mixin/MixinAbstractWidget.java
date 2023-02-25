@@ -1,7 +1,7 @@
-package com.fabbe50.langsplit.mixin;
+package com.fabbe50.langsplit.common.mixin;
 
-import com.fabbe50.langsplit.LangUtils;
-import com.fabbe50.langsplit.Langsplit;
+import com.fabbe50.langsplit.common.LangUtils;
+import com.fabbe50.langsplit.common.Langsplit;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -24,8 +24,6 @@ import java.util.List;
 
 @Mixin(AbstractWidget.class)
 public abstract class MixinAbstractWidget extends GuiComponent implements Widget, GuiEventListener, NarratableEntry {
-    @Shadow public boolean visible;
-    @Shadow protected boolean isHovered;
     @Shadow protected int width;
     @Shadow protected int height;
     @Shadow public int x;
@@ -84,7 +82,6 @@ public abstract class MixinAbstractWidget extends GuiComponent implements Widget
                 }
             } catch (NullPointerException ignored) {}
             stack.popPose();
-
             ci.cancel();
         }
     }

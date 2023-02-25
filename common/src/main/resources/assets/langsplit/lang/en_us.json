@@ -3,5 +3,14 @@
     "text.langsplit.option.language": "Language",
     "text.langsplit.option.inline": "Inline Translation",
     "text.langsplit.option.debugger": "Debugging Tools",
-    "text.langsplit.option.translationBrackets": "Encase in Brackets"
+    "text.langsplit.option.translationbrackets": "Encase in Brackets",
+    "text.langsplit.option.blendcolor": "Blend Color",
+    "text.langsplit.option.blendcolor.desc": "Blends the original text color with the translation text color to help with the colored parts of tooltips.",
+    "text.langsplit.option.blendcolor.desc2": "Like for instance the red enchantment curses. White text will always just straight up use the",
+    "text.langsplit.option.blendcolor.desc3": "translation text color instead of blending.",
+    "text.langsplit.option.blendingratio": "Blending Ratio",
+    "text.langsplit.option.blendingratio.value": "Ratio: %d%%",
+    "text.langsplit.option.blendingratio.desc": "Used for setting how much of the original color vs translation color is being used.",
+    "text.langsplit.option.blendingratio.desc2": "Lower for more of the original color and higher for more of the translation color.",
+    "text.langsplit.option.color": "Translation Text Color"
 }

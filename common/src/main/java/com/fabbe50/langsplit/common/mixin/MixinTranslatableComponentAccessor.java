@@ -1,4 +1,4 @@
-package com.fabbe50.langsplit.mixin;
+package com.fabbe50.langsplit.common.mixin;
 
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.spongepowered.asm.mixin.Final;

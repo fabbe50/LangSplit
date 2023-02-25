@@ -1,8 +1,17 @@
 {
   "required": true,
-  "package": "com.fabbe50.langsplit.mixin",
+  "package": "com.fabbe50.langsplit.common.mixin",
+  "refmap": "langsplit-fabric-refmap.json",
+  "minVersion": "0.8",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "MixinAbstractButton",
+    "MixinAbstractSliderButton",
+    "MixinAbstractWidget",
+    "MixinAbstractWidgetGetMessage",
+    "MixinScreen",
+    "MixinTranslatableComponent",
+    "MixinTranslatableComponentAccessor"
   ],
   "mixins": [
   ],

@@ -1,33 +1,35 @@
 {
   "schemaVersion": 1,
   "id": "langsplit",
-  "version": "${version}",
   "name": "Language Splitter",
   "description": "To put this simply, I made this mod for my siblings to be able to learn English while playing Minecraft. It makes it possible to display 2 languages at the same time in the game.",
+  "version": "${version}",
   "authors": [
     "fabbe50"
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/langsplit",
-    "sources": "https://github.com/fabbe50/languagesplitter"
+    "sources": "https://github.com/fabbe50/languagesplitter",
+    "issues": "https://github.com/fabbe50/languagesplitter/issues"
   },
-  "license": "GNU GPLv3",
-  "environment": "*",
   "entrypoints": {
     "client": [
-      "com.fabbe50.langsplit.fabric.LangsplitFabric"
+      "com.fabbe50.langsplit.fabric.LangsplitImpl::init"
     ],
     "modmenu": [
       "com.fabbe50.langsplit.fabric.ModMenuIntegration"
     ]
   },
+  "license": "GNU GPLv3",
   "mixins": [
-    "langsplit.mixins.json",
-    "langsplit-common.mixins.json"
+    "langsplit.mixins.json"
   ],
+  "custom": {
+    "modmenu:clientsideOnly": true
+  },
   "depends": {
-    "fabric": "*",
-    "minecraft": ">=1.18.2",
-    "architectury": ">=4.5.76"
+    "fabric": ">=0.29.1",
+    "architectury": ">=2-",
+    "cloth-config2": ">=5-"
   }
 }

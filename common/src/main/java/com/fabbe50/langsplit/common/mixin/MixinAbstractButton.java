@@ -1,10 +1,12 @@
-package com.fabbe50.langsplit.mixin;
+package com.fabbe50.langsplit.common.mixin;
 
-import com.fabbe50.langsplit.LangUtils;
-import com.fabbe50.langsplit.Langsplit;
+import com.fabbe50.langsplit.common.LangUtils;
+import com.fabbe50.langsplit.common.Langsplit;
+import com.fabbe50.langsplit.common.ModConfig;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(AbstractButton.class)
@@ -14,8 +16,8 @@ public abstract class MixinAbstractButton extends AbstractWidget {
     }
 
     @Override
-    public Component getMessage() {
-        if (Langsplit.isLanguageLoaded()) {
+    public @NotNull Component getMessage() {
+        if (Langsplit.isLanguageLoaded() && !ModConfig.inline) {
             Component component = super.getMessage();
 
             StringBuilder original = new StringBuilder();

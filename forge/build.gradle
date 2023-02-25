@@ -1,80 +1,65 @@
 plugins {
     id "com.github.johnrengelman.shadow" version "7.1.2"
 }
+
+configurations {
+    shadow
+}
+
 architectury {
     platformSetupLoomIde()
     forge()
 }
 
-configurations {
-    common
-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
-    compileClasspath.extendsFrom common
-    runtimeClasspath.extendsFrom common
-    developmentForge.extendsFrom common
-}
-
-repositories {
-    maven { url "https://maven.shedaniel.me/" }
-}
-
-dependencies {
-    forge "net.minecraftforge:forge:${rootProject.forge_version}"
-    // Remove the next line if you don't want to depend on the API
-    modApi "dev.architectury:architectury-forge:${rootProject.architectury_version}"
-    modApi "me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}"
-
-    common(project(path: ":common", configuration: "namedElements")) { transitive false }
-    shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
+loom {
+    forge {
+        mixinConfig "langsplit-forge.mixins.json"
+    }
 }
 
 processResources {
-    inputs.property "version", project.version
-
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
+    }
+    inputs.property "version", project.version
+}
+
+dependencies {
+    minecraft("com.mojang:minecraft:${rootProject.architectury.minecraft}")
+    mappings loom.officialMojangMappings()
+    forge("net.minecraftforge:forge:${rootProject.architectury.minecraft}-${project.forge_version}")
+    modImplementation("me.shedaniel.cloth:cloth-config-forge:${rootProject.cloth_config_version}")
+    modImplementation("dev.architectury:architectury-forge:${rootProject.architectury_version}")
+
+    implementation(project(path: ":common", configuration: "namedElements")) {
+        transitive = false;
+    }
+    developmentForge(project(path: ":common", configuration: "namedElements")) {
+        transitive = false
+    }
+    shadow(project(path: ":common", configuration: "transformProductionForge")) {
+        transitive = false
     }
 }
 
 shadowJar {
+    //relocate("com.fabbe50.langsplit.common", "com.fabbe50.langsplit.common.forge")
     exclude "fabric.mod.json"
 
-    configurations = [project.configurations.shadowCommon]
-    classifier "dev-shadow"
+    configurations = [project.configurations.shadow]
+    classifier "shadow"
+}
+
+prepareRemapJar {
+    dependsOn(shadowJar)
 }
 
 remapJar {
-    input.set shadowJar.archiveFile
-    dependsOn shadowJar
-    classifier null
+    dependsOn(shadowJar)
+    inputFile.set(shadowJar.archivePath)
+    archiveClassifier.set("forge")
 }
 
 jar {
     classifier "dev"
-}
-
-sourcesJar {
-    def commonSources = project(":common").sourcesJar
-    dependsOn commonSources
-    from commonSources.archiveFile.map { zipTree(it) }
-}
-
-components.java {
-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
-        skip()
-    }
-}
-
-publishing {
-    publications {
-        mavenForge(MavenPublication) {
-            artifactId = rootProject.archives_base_name + "-" + project.name
-            from components.java
-        }
-    }
-
-    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
-    repositories {
-        // Add repositories to publish to here.
-    }
 }

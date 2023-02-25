@@ -1,12 +1,18 @@
-package com.fabbe50.langsplit;
+package com.fabbe50.langsplit.common;
 
 import com.google.common.collect.Lists;
+import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.MenuScreens;
+import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
+import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.util.ArrayList;
@@ -18,35 +24,39 @@ public class Langsplit {
     private static ClientLanguage clientLanguage = null;
     public static final String divider = "  -  ";
 
-    public static void init() {
+    public static void register() {
         handleTooltipEvent();
+        ModConfig.register();
     }
 
     public static void setupLanguage(LanguageInfo secondary) {
         System.out.println("Setting up secondary language.");
         List<LanguageInfo> list = Lists.newArrayList(secondary);
         clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list);
-        loadedLanguage = LangsplitExpectPlatform.getLanguage();
+        loadedLanguage = ModConfig.language;
         System.out.println("Secondary language initialized. Loaded " + loadedLanguage);
     }
 
     private static LanguageInfo secondary = null;
     private static LanguageInfo oldSecondary = null;
     public static boolean isLanguageLoaded() {
-        LanguageInfo primary = Minecraft.getInstance().getLanguageManager().getSelected();
-        if (!getLoadedLanguage().equals(LangsplitExpectPlatform.getLanguage())) {
-            secondary = Minecraft.getInstance().getLanguageManager().getLanguage(LangsplitExpectPlatform.getLanguage());
-            if (secondary != null || secondary != oldSecondary) {
-                oldSecondary = secondary;
+        try {
+            LanguageInfo primary = Minecraft.getInstance().getLanguageManager().getSelected();
+            if (!getLoadedLanguage().equals(ModConfig.language)) {
+                secondary = Minecraft.getInstance().getLanguageManager().getLanguage(ModConfig.language);
+                if (secondary != null || secondary != oldSecondary) {
+                    oldSecondary = secondary;
+                }
             }
-        }
 
-        if (secondary != null) {
-            if (primary != secondary && getLoadedLanguage() != null && !getLoadedLanguage().equals(secondary.getCode())) {
-                setupLanguage(secondary);
-                return true;
-            } else return primary != secondary && getLoadedLanguage() != null && getLoadedLanguage().equals(secondary.getCode());
-        }
+            if (secondary != null) {
+                if (primary != secondary && getLoadedLanguage() != null && !getLoadedLanguage().equals(secondary.getCode())) {
+                    setupLanguage(secondary);
+                    return true;
+                } else
+                    return primary != secondary && getLoadedLanguage() != null && getLoadedLanguage().equals(secondary.getCode());
+            }
+        } catch (NullPointerException ignored) {}
         return false;
     }
 
@@ -89,19 +99,19 @@ public class Langsplit {
 
 //                            translation = translation.substring(0, translation.length() / 2);
 
-                        if (LangsplitExpectPlatform.getInLine()) {
-                            if (LangsplitExpectPlatform.getTranslationBrackets()) {
-                                newTooltip.add(Component.literal(original.toString() + " [" + translation + "]").setStyle(component.getStyle()));
+                        if (ModConfig.inline) {
+                            if (ModConfig.translationBrackets) {
+                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()).append(Component.literal(" [" + translation + "]").setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
                             } else {
-                                newTooltip.add(Component.literal(original.toString() + " " + translation).setStyle(component.getStyle()));
+                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()).append(Component.literal(translation).setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
                             }
                         } else {
-                            if (LangsplitExpectPlatform.getTranslationBrackets()) {
+                            if (ModConfig.translationBrackets) {
                                 newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()));
-                                newTooltip.add(Component.literal("[" + translation + "]").setStyle(component.getStyle()));
+                                newTooltip.add(Component.literal("[" + translation + "]").setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                             } else {
                                 newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()));
-                                newTooltip.add(Component.literal(translation).setStyle(component.getStyle()));
+                                newTooltip.add(Component.literal(translation).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                             }
                         }
                         hasContent = true;
@@ -111,12 +121,21 @@ public class Langsplit {
                     }
                 }
                 if (!hasContent) {
-                    if (LangsplitExpectPlatform.getInLine()) {
-                        newTooltip.add(Component.literal(component.getString().replace(Langsplit.divider, " ")).setStyle(component.getStyle()));
+                    if (ModConfig.inline) {
+                        String[] split = component.getString().split(Langsplit.divider);
+                        if (split.length == 2) {
+                            newTooltip.add(Component.literal(split[0]).setStyle(component.getStyle()).append(Component.literal(split[1]).setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
+                        } else if (split.length == 1)  {
+                            newTooltip.add(Component.literal(split[0]).setStyle(component.getStyle()));
+                        }
                     } else {
                         String[] newLines = component.getString().split(Langsplit.divider);
-                        for (String newLine : newLines) {
-                            newTooltip.add(Component.literal(newLine).setStyle(component.getStyle()));
+                        for (int i = 0; i < newLines.length; i++) {
+                            if (i % 2 == 0) {
+                                newTooltip.add(Component.literal(newLines[i]).setStyle(component.getStyle()));
+                            } else {
+                                newTooltip.add(Component.literal(newLines[i]).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
+                            }
                         }
                     }
                 }

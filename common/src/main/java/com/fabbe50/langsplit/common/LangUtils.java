@@ -1,4 +1,4 @@
-package com.fabbe50.langsplit;
+package com.fabbe50.langsplit.common;
 
 import com.google.common.collect.Lists;
 import net.minecraft.locale.Language;
@@ -60,18 +60,18 @@ public class LangUtils {
                 String original = language.getOrDefault(old.getKey());
                 String translation = String.format(Langsplit.getClientLanguage().getOrDefault(((TranslatableContents) contents).getKey()), args.toArray()) + extras;
                 if (!original.equals(translation) && !translation.equals(((TranslatableContents) contents).getKey())) {
-                    if (LangsplitExpectPlatform.getInLine()) {
-                        if (LangsplitExpectPlatform.getTranslationBrackets()) {
+                    if (ModConfig.inline) {
+                        if (ModConfig.translationBrackets) {
                             newLines.add(MutableComponent.create(new LiteralContents(original + " [" + translation + "]")).setStyle(component.getStyle()));
                         } else {
                             newLines.add(MutableComponent.create(new LiteralContents(original + " " + translation)).setStyle(component.getStyle()));
                         }
                     } else {
                         newLines.add(MutableComponent.create(old).setStyle(component.getStyle()));
-                        if (LangsplitExpectPlatform.getTranslationBrackets()) {
-                            newLines.add(MutableComponent.create(new LiteralContents("[" + translation + "]")).setStyle(component.getStyle()));
+                        if (ModConfig.translationBrackets) {
+                            newLines.add(MutableComponent.create(new LiteralContents("[" + translation + "]")).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                         } else {
-                            newLines.add(MutableComponent.create(new LiteralContents(translation)).setStyle(component.getStyle()));
+                            newLines.add(MutableComponent.create(new LiteralContents(translation)).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                         }
                     }
                 } else {
@@ -81,7 +81,6 @@ public class LangUtils {
         } else if (contents instanceof LiteralContents) {
             if (!component.getSiblings().isEmpty()) {
                 for (Component component1 : component.getSiblings()) {
-                    ComponentContents contents1 = component1.getContents();
                     if (component1 instanceof TranslatableContents old) {
                         List<String> args = new ArrayList<>();
                         for (Object o : Arrays.stream(old.getArgs()).toList()) {
@@ -91,22 +90,22 @@ public class LangUtils {
                                 args.add(tc.text());
                             }
                         }
-                        contents1 = new TranslatableContents(old.getKey().replace("WIDGET", ""));
+                        TranslatableContents contents1 = new TranslatableContents(old.getKey().replace("WIDGET", ""));
                         String original = language.getOrDefault(old.getKey());
-                        String translation = String.format(Langsplit.getClientLanguage().getOrDefault(((TranslatableContents) contents1).getKey()), args);
-                        if (!original.equals(translation) && !translation.equals(((TranslatableContents) contents1).getKey())) {
-                            if (LangsplitExpectPlatform.getInLine()) {
-                                if (LangsplitExpectPlatform.getTranslationBrackets()) {
+                        String translation = String.format(Langsplit.getClientLanguage().getOrDefault(contents1.getKey()), args);
+                        if (!original.equals(translation) && !translation.equals(contents1.getKey())) {
+                            if (ModConfig.inline) {
+                                if (ModConfig.translationBrackets) {
                                     newLines.add(MutableComponent.create(new LiteralContents(original + " [" + translation + "]")).setStyle(component.getStyle()));
                                 } else {
                                     newLines.add(MutableComponent.create(new LiteralContents(original + " " + translation)).setStyle(component.getStyle()));
                                 }
                             } else {
                                 newLines.add(MutableComponent.create(old).setStyle(component.getStyle()));
-                                if (LangsplitExpectPlatform.getTranslationBrackets()) {
-                                    newLines.add(MutableComponent.create(new LiteralContents("[" + translation + "]")).setStyle(component.getStyle()));
+                                if (ModConfig.translationBrackets) {
+                                    newLines.add(MutableComponent.create(new LiteralContents("[" + translation + "]")).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                                 } else {
-                                    newLines.add(MutableComponent.create(new LiteralContents(translation)).setStyle(component.getStyle()));
+                                    newLines.add(MutableComponent.create(new LiteralContents(translation)).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
                                 }
                             }
                         } else {
@@ -123,8 +122,13 @@ public class LangUtils {
 
     public static List<Component> splitLines(Component component) {
         List<Component> newLines = Lists.newArrayList();
-        for (String s : component.getString().split(Langsplit.divider)) {
-            newLines.add(Component.literal(s).setStyle(component.getStyle()));
+        String[] ss = component.getString().split(Langsplit.divider);
+        for (int i = 0; i < ss.length; i++) {
+            if (i % 2 == 0) {
+                newLines.add(Component.literal(ss[i]).setStyle(component.getStyle()));
+            } else {
+                newLines.add(Component.literal(ss[i]).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
+            }
         }
         return newLines;
     }

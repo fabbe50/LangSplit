@@ -5,7 +5,6 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import com.fabbe50.langsplit.common.LangUtils;
 import com.fabbe50.langsplit.common.Langsplit;
-import com.fabbe50.langsplit.common.ModConfig;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(AbstractSliderButton.class)

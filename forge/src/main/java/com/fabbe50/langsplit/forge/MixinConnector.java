@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.connect.IMixinConnector;
 public class MixinConnector implements IMixinConnector {
     @Override
     public void connect() {
-        Mixins.addConfigurations("langsplit-common.mixins.json");
+        Mixins.addConfigurations("langsplit-forge.mixins.json");
     }
 }
