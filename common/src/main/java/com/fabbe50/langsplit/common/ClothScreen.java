@@ -6,12 +6,11 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.resources.language.LanguageInfo;
+import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.Component;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedSet;
+import java.util.*;
 
 public class ClothScreen {
     public static Screen getConfigScreen(Screen parent) {
@@ -21,14 +20,31 @@ public class ClothScreen {
 
         var entryBuilder = builder.entryBuilder();
         var general = builder.getOrCreateCategory(Component.translatable("text.langsplit.category.general"));
-        general.addEntry(entryBuilder.startDropdownMenu(Component.translatable("text.langsplit.option.language"), DropdownMenuBuilder.TopCellElementBuilder.of(ModConfig.language, (s) -> {
-            LanguageInfo info = Minecraft.getInstance().getLanguageManager().getLanguage(s);
-            if (info != null) {
-                return info.getCode();
-            } else {
+        general.addEntry(entryBuilder.startDropdownMenu(Component.translatable("text.langsplit.option.language"),
+            DropdownMenuBuilder.TopCellElementBuilder.of(ModConfig.language, (s) -> {
+                Map<String, String> mappedLanguages = getLocalizedLanguagesFromGame();
+                if (mappedLanguages.containsKey(s)) {
+                    return mappedLanguages.get(s);
+                }
                 return "en_us";
-            }
-        })).setDefaultValue("en_us").setSelections(Lists.newArrayList(getLanguagesFromGame())).setSaveConsumer(s -> ModConfig.language = s).build());
+            }, (t) -> {
+                Map<String, String> mappedLanguages = getLocalizedLanguagesFromGame();
+                if (mappedLanguages.containsKey(t)) {
+                    return Component.literal(t);
+                } else if (mappedLanguages.containsValue(t)) {
+                    LanguageInfo info = Minecraft.getInstance().getLanguageManager().getLanguage(t);
+                    if (info != null) {
+                        return Component.literal(info.name() + " (" + info.region() + ")");
+                    }
+                }
+                return Component.literal("English (US)");
+            }),
+            DropdownMenuBuilder.CellCreatorBuilder.of((t) -> {
+                if (getLocalizedLanguagesFromGame().containsKey(t)) {
+                    return Component.literal(t);
+                }
+                return Component.literal("English (US)");
+            })).setDefaultValue("en_us").setSelections(Lists.newArrayList(getLocalizedLanguagesFromGame().keySet())).setSaveConsumer(s -> ModConfig.language = s).build());
         general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.inline"), ModConfig.inline).setDefaultValue(false).setSaveConsumer(s -> ModConfig.inline = s).build());
         general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.translationbrackets"), ModConfig.translationBrackets).setDefaultValue(true).setSaveConsumer(s -> ModConfig.translationBrackets = s).build());
         general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.blendcolor"), ModConfig.blendColor)
@@ -60,11 +76,21 @@ public class ClothScreen {
     }
 
     private static List<String> getLanguagesFromGame() {
-        SortedSet<LanguageInfo> languages = Minecraft.getInstance().getLanguageManager().getLanguages();
-        List<String> langCodes = new ArrayList<>();
-        for (LanguageInfo lang : languages) {
-            langCodes.add(lang.getCode());
+        LanguageManager manager = Minecraft.getInstance().getLanguageManager();
+        SortedMap<String, LanguageInfo> languages = manager.getLanguages();
+        return new ArrayList<>(languages.keySet());
+    }
+
+    private static Map<String, String> getLocalizedLanguagesFromGame() {
+        LanguageManager manager = Minecraft.getInstance().getLanguageManager();
+        List<String> languages = getLanguagesFromGame();
+        Map<String, String> formattedNames = new HashMap<>();
+        for (String language : languages) {
+            LanguageInfo languageInfo = manager.getLanguage(language);
+            if (languageInfo != null) {
+                formattedNames.put(languageInfo.name() + " (" + languageInfo.region() + ")", language);
+            }
         }
-        return langCodes;
+        return formattedNames;
     }
 }

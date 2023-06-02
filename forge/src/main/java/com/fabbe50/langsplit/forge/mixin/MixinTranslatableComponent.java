@@ -1,4 +1,4 @@
-package com.fabbe50.langsplit.common.mixin;
+package com.fabbe50.langsplit.forge.mixin;
 
 import com.fabbe50.langsplit.common.Langsplit;
 import com.fabbe50.langsplit.common.ModConfig;

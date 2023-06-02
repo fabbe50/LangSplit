@@ -12,5 +12,6 @@
     "text.langsplit.option.blendingratio.value": "Ratio: %d%%",
     "text.langsplit.option.blendingratio.desc": "Used for setting how much of the original color vs translation color is being used.",
     "text.langsplit.option.blendingratio.desc2": "Lower for more of the original color and higher for more of the translation color.",
-    "text.langsplit.option.color": "Translation Text Color"
+    "text.langsplit.option.color": "Translation Text Color",
+    "text.langsplit.category.general": "General"
 }

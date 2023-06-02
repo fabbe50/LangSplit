@@ -1,4 +1,4 @@
-package com.fabbe50.langsplit.common.mixin;
+package com.fabbe50.langsplit.fabric.mixin;
 
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;

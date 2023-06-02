@@ -17,6 +17,12 @@ loom {
     }
 }
 
+sourceSets {
+    main {
+        ext.refMap = "langsplit-forge-refmap.json"
+    }
+}
+
 processResources {
     filesMatching("META-INF/mods.toml") {
         expand "version": project.version
@@ -43,7 +49,8 @@ dependencies {
 }
 
 shadowJar {
-    //relocate("com.fabbe50.langsplit.common", "com.fabbe50.langsplit.common.forge")
+    //relocate("com.fabbe50.langsplit.common", "com.fabbe50.langsplit.forge")
+
     exclude "fabric.mod.json"
 
     configurations = [project.configurations.shadow]

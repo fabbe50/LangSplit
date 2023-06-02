@@ -27,7 +27,7 @@ public class LangUtils {
         List<Component> newLines = Lists.newArrayList();
         ComponentContents contents = component.getContents();
         if (contents instanceof TranslatableContents old) {
-            contents = new TranslatableContents(old.getKey().replace("WIDGET", "").replace("TOOLTIP", ""));
+            contents = new TranslatableContents(old.getKey().replace("WIDGET", "").replace("TOOLTIP", ""), null, new Object[]{});
             List<Object> args = new ArrayList<>();
             for (Object o : Arrays.stream(old.getArgs()).toList()) {
                 if (o instanceof Component c) {
@@ -90,7 +90,7 @@ public class LangUtils {
                                 args.add(tc.text());
                             }
                         }
-                        TranslatableContents contents1 = new TranslatableContents(old.getKey().replace("WIDGET", ""));
+                        TranslatableContents contents1 = new TranslatableContents(old.getKey().replace("WIDGET", ""), null, new Object[]{});
                         String original = language.getOrDefault(old.getKey());
                         String translation = String.format(Langsplit.getClientLanguage().getOrDefault(contents1.getKey()), args);
                         if (!original.equals(translation) && !translation.equals(contents1.getKey())) {

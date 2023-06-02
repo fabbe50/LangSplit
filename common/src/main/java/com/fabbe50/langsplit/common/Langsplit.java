@@ -1,15 +1,11 @@
 package com.fabbe50.langsplit.common;
 
 import com.google.common.collect.Lists;
-import dev.architectury.event.events.client.ClientGuiEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.screens.MenuScreens;
-import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageInfo;
+import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.Style;
@@ -17,44 +13,60 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Langsplit {
     public static final String MOD_ID = "langsplit";
     private static String loadedLanguage = "";
     private static ClientLanguage clientLanguage = null;
     public static final String divider = "  -  ";
+    private static LanguageManager manager;
+    private static boolean firstRun = true;
 
     public static void register() {
         handleTooltipEvent();
         ModConfig.register();
     }
 
-    public static void setupLanguage(LanguageInfo secondary) {
-        System.out.println("Setting up secondary language.");
-        List<LanguageInfo> list = Lists.newArrayList(secondary);
-        clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list);
-        loadedLanguage = ModConfig.language;
-        System.out.println("Secondary language initialized. Loaded " + loadedLanguage);
+    public static void setupLanguage(String secondary) {
+        System.out.println("Attempting initialization of secondary language: " + secondary);
+        List<String> list = Lists.newArrayList(secondary);
+        LanguageInfo secondaryInfo = manager.getLanguage(secondary);
+        if (secondaryInfo != null) {
+            clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list, secondaryInfo.bidirectional());
+            loadedLanguage = ModConfig.language;
+            System.out.println("Secondary language initialized. Loaded " + loadedLanguage);
+        } else {
+            System.out.println("Error initializing secondary language: " + secondary);
+        }
     }
 
-    private static LanguageInfo secondary = null;
-    private static LanguageInfo oldSecondary = null;
+    private static String secondary = null;
+    private static String oldSecondary = null;
     public static boolean isLanguageLoaded() {
         try {
-            LanguageInfo primary = Minecraft.getInstance().getLanguageManager().getSelected();
+            manager = Minecraft.getInstance().getLanguageManager();
+            if (firstRun) {
+                for (String lang : manager.getLanguages().keySet()) {
+                    System.out.println(lang);
+                }
+                firstRun = false;
+            }
+
+            String primary = manager.getSelected();
             if (!getLoadedLanguage().equals(ModConfig.language)) {
-                secondary = Minecraft.getInstance().getLanguageManager().getLanguage(ModConfig.language);
-                if (secondary != null || secondary != oldSecondary) {
+                secondary = ModConfig.language;
+                if (manager.getLanguages().containsKey(secondary) || !Objects.equals(secondary, oldSecondary)) {
                     oldSecondary = secondary;
                 }
             }
 
             if (secondary != null) {
-                if (primary != secondary && getLoadedLanguage() != null && !getLoadedLanguage().equals(secondary.getCode())) {
+                if (!primary.equals(secondary) && getLoadedLanguage() != null && !getLoadedLanguage().equals(secondary)) {
                     setupLanguage(secondary);
                     return true;
                 } else
-                    return primary != secondary && getLoadedLanguage() != null && getLoadedLanguage().equals(secondary.getCode());
+                    return !primary.equals(secondary) && getLoadedLanguage() != null;
             }
         } catch (NullPointerException ignored) {}
         return false;

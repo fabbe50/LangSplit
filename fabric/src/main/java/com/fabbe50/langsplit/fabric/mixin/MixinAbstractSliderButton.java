@@ -1,25 +1,22 @@
-package com.fabbe50.langsplit.common.mixin;
+package com.fabbe50.langsplit.fabric.mixin;
 
-import com.fabbe50.langsplit.common.LangUtils;
-import com.fabbe50.langsplit.common.Langsplit;
-import com.fabbe50.langsplit.common.ModConfig;
-import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
-import org.jetbrains.annotations.NotNull;
+import com.fabbe50.langsplit.common.LangUtils;
+import com.fabbe50.langsplit.common.Langsplit;
 import org.spongepowered.asm.mixin.Mixin;
 
-@Mixin(AbstractButton.class)
-public abstract class MixinAbstractButton extends AbstractWidget {
-    public MixinAbstractButton(int i, int j, int k, int l, Component component) {
+@Mixin(AbstractSliderButton.class)
+public abstract class MixinAbstractSliderButton extends AbstractWidget {
+    public MixinAbstractSliderButton(int i, int j, int k, int l, Component component) {
         super(i, j, k, l, component);
     }
 
     @Override
-    public @NotNull Component getMessage() {
-        if (Langsplit.isLanguageLoaded() && !ModConfig.inline) {
+    public Component getMessage() {
+        if (Langsplit.isLanguageLoaded()) {
             Component component = super.getMessage();
-
             StringBuilder original = new StringBuilder();
             StringBuilder translation = new StringBuilder();
             String[] langArray = component.getString().split(": ");
@@ -41,7 +38,7 @@ public abstract class MixinAbstractButton extends AbstractWidget {
                     translation.append(": ");
                 }
             }
-            return Component.literal(original + (translation.isEmpty() ? "" : Langsplit.divider + translation)).setStyle(component.getStyle());
+            return Component.literal(original + Langsplit.divider + translation).setStyle(component.getStyle());
         } else {
             return super.getMessage();
         }
