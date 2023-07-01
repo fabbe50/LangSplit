@@ -1,43 +1,45 @@
 modLoader = "javafml"
-loaderVersion = "[40,)"
-issueTrackerURL = "https://github.com/fabbe50/languagesplitter/issues"
-authors = "fabbe50"
+loaderVersion = "[45,)"
+
 license = "GNU GPLv3"
+issueTrackerURL = "https://github.com/fabbe50/languagesplitter/issues"
+showAsResourcePack = false
 
 [[mods]]
 modId = "langsplit"
 version = "${version}"
 displayName = "Language Splitter"
+displayURL = "https://fabbe50.com/modlink/langsplit/"
+authors = "fabbe50"
 description = '''
 To put this simply, I made this mod for my siblings to be able to learn English while playing Minecraft.
 It makes it possible to display 2 languages at the same time in the game.
 '''
 
 [[dependencies.langsplit]]
-modId = "cloth_config"
-mandatory = true
-versionRange = "[8,)"
-ordering = "NONE"
-side = "CLIENT"
-
-[[dependencies.langsplit]]
-modId = "architectury"
-mandatory = true
-versionRange = "[4.5.76,)"
-ordering = "AFTER"
-side = "CLIENT"
-
-[[dependencies.langsplit]]
 modId = "forge"
 mandatory = true
-versionRange = "[40,)"
+versionRange = "[45,)"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.langsplit]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.19.2,)"
+versionRange = "[1.19.4,)"
 ordering = "NONE"
 side = "BOTH"
 
+[[dependencies.langsplit]]
+modId = "architectury"
+mandatory = true
+versionRange = "[8.1.79,)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies.langsplit]]
+modId = "cloth_config"
+mandatory = true
+versionRange = "[10,)"
+ordering = "AFTER"
+side = "CLIENT"

@@ -1,17 +1,22 @@
 package com.fabbe50.langsplit.common;
 
 import com.google.common.collect.Lists;
+import dev.architectury.event.events.client.ClientGuiEvent;
+import dev.architectury.event.events.client.ClientTickEvent;
 import dev.architectury.event.events.client.ClientTooltipEvent;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.LanguageSelectScreen;
 import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentContents;
 import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.chat.contents.TranslatableContents;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -24,8 +29,8 @@ public class Langsplit {
     private static boolean firstRun = true;
 
     public static void register() {
-        handleTooltipEvent();
         ModConfig.register();
+        handleTooltipEvent();
     }
 
     public static void setupLanguage(String secondary) {
@@ -35,7 +40,7 @@ public class Langsplit {
         if (secondaryInfo != null) {
             clientLanguage = ClientLanguage.loadFrom(Minecraft.getInstance().getResourceManager(), list, secondaryInfo.bidirectional());
             loadedLanguage = ModConfig.language;
-            System.out.println("Secondary language initialized. Loaded " + loadedLanguage);
+            System.out.println("Secondary language initialized. Loaded " + loadedLanguage + " (" + clientLanguage.getOrDefault("language.name") + ")");
         } else {
             System.out.println("Error initializing secondary language: " + secondary);
         }
@@ -54,7 +59,7 @@ public class Langsplit {
             }
 
             String primary = manager.getSelected();
-            if (!getLoadedLanguage().equals(ModConfig.language)) {
+            if (!getLoadedLanguage().equals(ModConfig.language) && ModConfig.language != null) {
                 secondary = ModConfig.language;
                 if (manager.getLanguages().containsKey(secondary) || !Objects.equals(secondary, oldSecondary)) {
                     oldSecondary = secondary;
@@ -79,79 +84,31 @@ public class Langsplit {
 
             List<Component> newTooltip = new ArrayList<>();
             for (Component component : lines) {
-                boolean hasContent = false;
-                ComponentContents contents = component.getContents();
-                if (contents instanceof TranslatableContents translatableContents) {
-                    if (translatableContents.getArgs().length != 0) {
-                        String newText = getClientLanguage().getOrDefault(translatableContents.getKey());
-                        Object[] newArgs = LangUtils.fixArguments(translatableContents.getArgs());
-                        int endIndex = component.getString().indexOf(Langsplit.divider);
-                        if (endIndex < 1 || endIndex > component.getString().length())
-                            return;
-                        StringBuilder original = new StringBuilder(component.getString().substring(0, endIndex));
-                        boolean argumentFlag = false;
-                        for (Object o : newArgs) {
-                            if (original.toString().startsWith("+" + o.toString())) {
-                                argumentFlag = true;
-                                break;
-                            }
-                        }
-                        String translation = String.format(newText, newArgs);
-                        if (newArgs.length == 3) {
-                            Object[] mergedArgs = new Object[]{newArgs[0] + " " + newArgs[1], newArgs[2]};
-                            if (!argumentFlag) {
-                                original.append(" ").append(newArgs[1]).append(" (").append(newArgs[2]).append(")");
-                            }
-                            translation = String.format(newText, mergedArgs);
-                        } else if (newArgs.length == 2) {
-                            if (!argumentFlag) {
-                                original.append(" (").append(newArgs[1]).append(")");
-                            }
-                        }
-
-//                            translation = translation.substring(0, translation.length() / 2);
-
+                Component[] translationPair = LangUtils.translate(component);
+                if (translationPair.length >= 2) {
+                    TextColor color = component.getStyle().getColor();
+                    int colorInt = color != null ? color.getValue() : 0xFFFFFF;
+                    if (ModConfig.translationBrackets) {
+                        translationPair[1] = LangUtils.encase(translationPair[1]);
+                    }
+                    if (ModConfig.blendColor) {
+                        colorInt = ModConfig.getTextColor(color);
+                    }
+                    if (!(translationPair[1].getString().isEmpty() || translationPair[1].getString().equals("[]"))) {
                         if (ModConfig.inline) {
-                            if (ModConfig.translationBrackets) {
-                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()).append(Component.literal(" [" + translation + "]").setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
-                            } else {
-                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()).append(Component.literal(translation).setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
-                            }
+                            newTooltip.add(LangUtils.combine(component, translationPair[1].plainCopy().withStyle(component.getStyle().withColor(colorInt)), LangUtils.CombineType.DIVIDER));
                         } else {
-                            if (ModConfig.translationBrackets) {
-                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()));
-                                newTooltip.add(Component.literal("[" + translation + "]").setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
-                            } else {
-                                newTooltip.add(Component.literal(original.toString()).setStyle(component.getStyle()));
-                                newTooltip.add(Component.literal(translation).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
-                            }
-                        }
-                        hasContent = true;
-                    } else {
-                        //Target "item.modifiers.mainhand" as this has no arguments.
-                        //String newText = getClientLanguage().getOrDefault(translatableContents.getKey());
-                    }
-                }
-                if (!hasContent) {
-                    if (ModConfig.inline) {
-                        String[] split = component.getString().split(Langsplit.divider);
-                        if (split.length == 2) {
-                            newTooltip.add(Component.literal(split[0]).setStyle(component.getStyle()).append(Component.literal(split[1]).setStyle(Style.EMPTY.withColor(ModConfig.getTextColor(component.getStyle().getColor())))));
-                        } else if (split.length == 1)  {
-                            newTooltip.add(Component.literal(split[0]).setStyle(component.getStyle()));
+                            newTooltip.add(component);
+                            newTooltip.add(translationPair[1].plainCopy().withStyle(component.getStyle().withColor(colorInt)));
                         }
                     } else {
-                        String[] newLines = component.getString().split(Langsplit.divider);
-                        for (int i = 0; i < newLines.length; i++) {
-                            if (i % 2 == 0) {
-                                newTooltip.add(Component.literal(newLines[i]).setStyle(component.getStyle()));
-                            } else {
-                                newTooltip.add(Component.literal(newLines[i]).setStyle(component.getStyle().withColor(ModConfig.getTextColor(component.getStyle().getColor()))));
-                            }
-                        }
+                        newTooltip.add(component);
                     }
+                } else {
+                    newTooltip.add(component);
                 }
             }
+
             lines.clear();
             lines.addAll(newTooltip);
         });

@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Properties;
+import java.util.*;
 
 public class ModConfig {
     public static File configFile;
@@ -19,18 +19,25 @@ public class ModConfig {
     public static boolean blendColor;
     public static float blendingRatio;
     public static int textColor;
+    public static Map<String, ModConfigObjects.ConfigCustomTextLocation> textLocations = new HashMap<>();
 
     public static void register() {
         configFile = new File(Platform.getConfigFolder().toFile(), "langsplit.properties");
         load(configFile);
+        registerTextLocations();
+    }
+
+    private static void registerTextLocations() {
+        registerTextLocation("modmenudndfix1t", "modmenu.dropInfo.line1", 0, 14, true);
+        registerTextLocation("modmenudndfix2o", "modmenu.dropInfo.line2", 0, -4, true, true);
+        registerTextLocation("modmenudndfix2t", "modmenu.dropInfo.line2", 0, 10, true);
+        registerTextLocation("forgeBetaWarningO", "forge.update.beta.2", 0, 4, true, true);
+        registerTextLocation("forgeBetaWarningT", "forge.update.beta.2", 0, 5, true);
     }
 
     public static void load(File file) {
         try {
             textColor = 0xffffff;
-            if (!file.exists() || !file.canRead()) {
-                save(file);
-            }
             FileInputStream fis = new FileInputStream(file);
             Properties properties = new Properties();
             properties.load(fis);
@@ -38,14 +45,14 @@ public class ModConfig {
 
             language = ((String) properties.computeIfAbsent("language", a -> "en_us"));
             inline = ((String) properties.computeIfAbsent("inline", a -> "false")).equalsIgnoreCase("true");
-            translationBrackets = ((String) properties.computeIfAbsent("translationBrackets", a -> "true")).equalsIgnoreCase("true");
+            translationBrackets = ((String) properties.computeIfAbsent("translationBrackets", a -> "false")).equalsIgnoreCase("true");
             blendColor = ((String) properties.computeIfAbsent("blendTextColor", a -> "true")).equalsIgnoreCase("true");
-            blendingRatio = Float.parseFloat((String) properties.computeIfAbsent("blendingRatio", a -> "0.5f"));
+            blendingRatio = Float.parseFloat((String) properties.computeIfAbsent("blendingRatio", a -> "0.35f"));
             {
                 int r, g, b;
-                r = Integer.parseInt((String) properties.computeIfAbsent("textColorRed", a -> "255"));
+                r = Integer.parseInt((String) properties.computeIfAbsent("textColorRed", a -> "119"));
                 g = Integer.parseInt((String) properties.computeIfAbsent("textColorGreen", a -> "255"));
-                b = Integer.parseInt((String) properties.computeIfAbsent("textColorBlue", a -> "255"));
+                b = Integer.parseInt((String) properties.computeIfAbsent("textColorBlue", a -> "119"));
                 textColor = (r << 16) + (g << 8) + b;
             }
             save(file);
@@ -53,10 +60,10 @@ public class ModConfig {
             e.printStackTrace();
             language = "en_us";
             inline = false;
-            translationBrackets = true;
+            translationBrackets = false;
             blendColor = true;
-            blendingRatio = 0.5f;
-            textColor = 0xffffff;
+            blendingRatio = 0.35f;
+            textColor = 0x77ff77;
             try {
                 save(file);
             } catch (IOException e1) {
@@ -116,5 +123,22 @@ public class ModConfig {
             return newR << 16 | newG << 8 | newB;
         }
         return textColor;
+    }
+
+    private static void registerTextLocation(String name, String key, int x, int y) {
+        registerTextLocation(name, key, x, y, false);
+    }
+
+    private static void registerTextLocation(String name, String key, int x, int y, boolean useAsOffset) {
+        registerTextLocation(name, key, x, y, useAsOffset, false);
+    }
+
+    private static void registerTextLocation(String name, String key, int x, int y, boolean useAsOffset, boolean adjustOriginal) {
+        ModConfigObjects.ConfigCustomTextLocation ctl = new ModConfigObjects.ConfigCustomTextLocation(("config.langsplit." + name.toLowerCase()), key, x, y, useAsOffset, adjustOriginal);
+        registerTextLocation(name, ctl);
+    }
+
+    private static void registerTextLocation(String name, ModConfigObjects.ConfigCustomTextLocation customTextLocation) {
+        textLocations.put(name, customTextLocation);
     }
 }

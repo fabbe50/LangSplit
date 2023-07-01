@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "com.fabbe50.langsplit.common.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "MixinGuiComponent",
+    "MixinAbstractWidget",
+    "MixinLanguageSelectScreen",
+    "MixinFont"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

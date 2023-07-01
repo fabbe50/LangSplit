@@ -1,7 +1,0 @@
-{
-  "_comment": "This file is here to make fabric load this on Knot classloader.",
-  "schemaVersion": 1,
-  "id": "langsplit-core",
-  "name": "LangSplit Core",
-  "version": "${version}"
-}

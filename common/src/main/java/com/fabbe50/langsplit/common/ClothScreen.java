@@ -5,6 +5,7 @@ import me.shedaniel.clothconfig2.impl.builders.DropdownMenuBuilder;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.resources.language.ClientLanguage;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.client.resources.language.LanguageManager;
 import net.minecraft.network.chat.Component;
@@ -34,19 +35,20 @@ public class ClothScreen {
                 } else if (mappedLanguages.containsValue(t)) {
                     LanguageInfo info = Minecraft.getInstance().getLanguageManager().getLanguage(t);
                     if (info != null) {
-                        return Component.literal(info.name() + " (" + info.region() + ")");
+                        return info.toComponent().copy().append(" ").append(Component.translatable("text.langsplit.language." + t));
                     }
                 }
-                return Component.literal("English (US)");
+                return Component.literal("English (US) American English");
             }),
             DropdownMenuBuilder.CellCreatorBuilder.of((t) -> {
                 if (getLocalizedLanguagesFromGame().containsKey(t)) {
                     return Component.literal(t);
                 }
-                return Component.literal("English (US)");
-            })).setDefaultValue("en_us").setSelections(Lists.newArrayList(getLocalizedLanguagesFromGame().keySet())).setSaveConsumer(s -> ModConfig.language = s).build());
+                return Component.literal("English (US) American English");
+            })).setDefaultValue("en_us").setSelections(Lists.newArrayList(getLocalizedLanguagesFromGame().keySet())).setSaveConsumer(s -> ModConfig.language = s).setSuggestionMode(false).build());
+
         general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.inline"), ModConfig.inline).setDefaultValue(false).setSaveConsumer(s -> ModConfig.inline = s).build());
-        general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.translationbrackets"), ModConfig.translationBrackets).setDefaultValue(true).setSaveConsumer(s -> ModConfig.translationBrackets = s).build());
+        general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.translationbrackets"), ModConfig.translationBrackets).setDefaultValue(false).setSaveConsumer(s -> ModConfig.translationBrackets = s).build());
         general.addEntry(entryBuilder.startBooleanToggle(Component.translatable("text.langsplit.option.blendcolor"), ModConfig.blendColor)
                 .setDefaultValue(true)
                 .setSaveConsumer(s -> ModConfig.blendColor = s)
@@ -56,14 +58,14 @@ public class ClothScreen {
                         Component.translatable("text.langsplit.option.blendcolor.desc3")
                 ).build());
         general.addEntry(entryBuilder.startIntSlider(Component.translatable("text.langsplit.option.blendingratio"), (int)(ModConfig.blendingRatio * 100), 0, 100)
-                .setDefaultValue(50)
+                .setDefaultValue(35)
                 .setSaveConsumer(s -> ModConfig.blendingRatio = (s / 100f))
                 .setTextGetter((var) -> Component.translatable("text.langsplit.option.blendingratio.value", var))
                 .setTooltip(
                         Component.translatable("text.langsplit.option.blendingratio.desc"),
                         Component.translatable("text.langsplit.option.blendingratio.desc2")
                 ).build());
-        general.addEntry(entryBuilder.startColorField(Component.translatable("text.langsplit.option.color"), ModConfig.textColor).setDefaultValue(0xffffff).setSaveConsumer(s -> ModConfig.textColor = s).build());
+        general.addEntry(entryBuilder.startColorField(Component.translatable("text.langsplit.option.color"), ModConfig.textColor).setDefaultValue(0x77ff77).setSaveConsumer(s -> ModConfig.textColor = s).build());
 
         return builder.setSavingRunnable(() -> {
             try {
@@ -88,7 +90,7 @@ public class ClothScreen {
         for (String language : languages) {
             LanguageInfo languageInfo = manager.getLanguage(language);
             if (languageInfo != null) {
-                formattedNames.put(languageInfo.name() + " (" + languageInfo.region() + ")", language);
+                formattedNames.put(languageInfo.toComponent().getString() + " " + ClientLanguage.getInstance().getOrDefault("text.langsplit.language." + language), language);
             }
         }
         return formattedNames;

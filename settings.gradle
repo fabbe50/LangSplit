@@ -8,8 +8,8 @@ pluginManagement {
     }
 }
 
-rootProject.name = "langsplit"
-
 include("common")
 include("fabric")
 include("forge")
+
+rootProject.name = "langsplit"
