@@ -2,13 +2,14 @@ package com.fabbe50.langsplit.common;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.util.FormattedCharSequence;
 
 public class TextRenderHelper {
-    public static void drawSingleLine(PoseStack poseStack, Font font, Component[] components, Style style, float x, float y, int color) {
+    public static void drawSingleLine(PoseStack poseStack, MultiBufferSource multiBufferSource, Font font, Component[] components, Style style, float x, float y, int color, boolean shadow) {
         if (ModConfig.blendColor) {
             color = ModConfig.getTextColor(color);
             TextColor textColor = style.getColor();
@@ -18,12 +19,13 @@ public class TextRenderHelper {
             }
         }
         Component splitComponent = Component.empty().append(components[0].copy().withStyle(style)).append(Langsplit.divider).append(components[1].copy().withStyle(style.withColor(color)));
-        font.drawShadow(poseStack, splitComponent, x, y, color);
+//        font.drawShadow(poseStack, splitComponent, x, y, color);
+        font.drawInBatch(splitComponent.getVisualOrderText(), x, y, color, shadow, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
     }
 
-    public static void drawTwoLines(PoseStack poseStack, Font font, Component component, Component[] components, float originalX, float originalY, float translationX, float translationY, int color) {
+    public static void drawTwoLines(PoseStack poseStack, MultiBufferSource multiBufferSource, Font font, Component component, Component[] components, float originalX, float originalY, float translationX, float translationY, int color, boolean shadow) {
         FormattedCharSequence originalText = components[0].getVisualOrderText();
-        font.drawShadow(poseStack, originalText, originalX, originalY, color);
+        font.drawInBatch(originalText, originalX, originalY, color, shadow, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
         if (ModConfig.blendColor) {
             color = ModConfig.getTextColor(color);
             TextColor textColor = component.getStyle().getColor();
@@ -33,7 +35,7 @@ public class TextRenderHelper {
             }
         }
         FormattedCharSequence translatedText = components[1].getVisualOrderText();
-        font.drawShadow(poseStack, translatedText, translationX, translationY, color);
+        font.drawInBatch(translatedText, translationX, translationY, color, shadow, poseStack.last().pose(), multiBufferSource, Font.DisplayMode.NORMAL, 0, 15728880);
     }
 
     private static float calculateCoord(float coord, int ctlCoord) {
@@ -74,9 +76,9 @@ public class TextRenderHelper {
 
         public GuiPositions getTwoLinesWithinMaxHeight(PoseStack poseStack, Component component, float heightScale) {
             originalX = inputX;
-            originalY = getPositionY(2, 16, heightScale);
+            originalY = getPositionY(2, 14, heightScale);
             translationX = inputX;
-            translationY = getPositionY(1, 16, heightScale);
+            translationY = getPositionY(1, 18, heightScale);
             poseStack.scale(1f, heightScale, 1f);
             applyOverrides(component);
             return this;

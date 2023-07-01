@@ -2,9 +2,9 @@ package com.fabbe50.langsplit.common.mixin;
 
 import com.fabbe50.langsplit.common.LangUtils;
 import com.fabbe50.langsplit.common.ModConfig;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.Util;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
@@ -15,12 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
-import static net.minecraft.client.gui.GuiComponent.*;
+import static com.mojang.blaze3d.systems.RenderSystem.disableScissor;
+import static com.mojang.blaze3d.systems.RenderSystem.enableScissor;
 
 @Mixin(AbstractWidget.class)
 public class MixinAbstractWidget {
-    @Inject(at = @At("HEAD"), method = "renderScrollingString(Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIII)V", cancellable = true)
-    private static void injectRenderScrollingString(PoseStack poseStack, Font font, Component component, int i, int j, int k, int l, int m, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "renderScrollingString(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIII)V", cancellable = true)
+    private static void injectRenderScrollingString(GuiGraphics guiGraphics, Font font, Component component, int i, int j, int k, int l, int m, CallbackInfo ci) {
         Component componentToMeasure = component.copy();
         Component[] components = LangUtils.translate(component);
         if (components.length == 2) {
@@ -42,10 +43,10 @@ public class MixinAbstractWidget {
             double f = Math.sin(1.5707963267948966 * Math.cos(6.283185307179586 * d / e)) / 2.0 + 0.5;
             double g = Mth.lerp(f, 0.0, q);
             enableScissor(i, j, k, l);
-            drawString(poseStack, font, component, i - (int) g, o, m);
+            guiGraphics.drawString(font, component, i - (int) g, o, m);
             disableScissor();
         } else {
-            drawCenteredString(poseStack, font, component, (i + k) / 2, o, m);
+            guiGraphics.drawCenteredString(font, component, (i + k) / 2, o, m);
         }
         ci.cancel();
     }
