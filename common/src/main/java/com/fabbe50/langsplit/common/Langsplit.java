@@ -84,7 +84,7 @@ public class Langsplit {
                                 break;
                             }
                         }
-                        String translation = String.format(newText, newArgs);
+                        String translation = newArgs.length > 0 ? String.format(newText, newArgs) : newText;
                         if (newArgs.length == 3) {
                             Object[] mergedArgs = new Object[]{newArgs[0] + " " + newArgs[1], newArgs[2]};
                             if (!argumentFlag) {
